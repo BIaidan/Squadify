@@ -10,25 +10,20 @@ async function getValidToken(shareCode: string) {
       .eq('share_code', shareCode)
       .single()
 
-    console.log('Playlist lookup:', playlist ? 'found' : 'not found', dbError)
-
-    if (!playlist) return null
+    if (!playlist || dbError) {
+      throw new Error('Playlist not found: ' + (dbError?.message || 'unknown'))
+    }
 
     let token = decrypt(playlist.spotify_access_token)
     const refreshToken = decrypt(playlist.spotify_refresh_token)
-
-    console.log('Testing token validity')
 
     // Try the token
     const testResponse = await fetch('https://api.spotify.com/v1/me', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
 
-    console.log('Token test status:', testResponse.status)
-
     // If expired, refresh it
     if (testResponse.status === 401) {
-      console.log('Refreshing token...')
       const refreshResponse = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: {
@@ -41,27 +36,29 @@ async function getValidToken(shareCode: string) {
         })
       })
 
-      console.log('Refresh response status:', refreshResponse.status)
-      const refreshData = await refreshResponse.json()
-      console.log('Refresh data:', refreshData)
-      
-      if (refreshData.access_token) {
-        token = refreshData.access_token
-        
-        // Update token in database
-        await supabaseAdmin
-          .from('shared_playlists')
-          .update({ spotify_access_token: encrypt(token) })
-          .eq('id', playlist.id)
-        
-        console.log('Token refreshed and updated')
+      if (!refreshResponse.ok) {
+        const errorText = await refreshResponse.text()
+        throw new Error(`Token refresh failed (${refreshResponse.status}): ${errorText}`)
       }
+
+      const refreshData = await refreshResponse.json()
+      
+      if (!refreshData.access_token) {
+        throw new Error('No access token in refresh response: ' + JSON.stringify(refreshData))
+      }
+
+      token = refreshData.access_token
+      
+      // Update token in database
+      await supabaseAdmin
+        .from('shared_playlists')
+        .update({ spotify_access_token: encrypt(token) })
+        .eq('id', playlist.id)
     }
 
-    return token
-  } catch (error) {
-    console.error('getValidToken error:', error)
-    return null
+    return { success: true, token }
+  } catch (error: any) {
+    return { success: false, error: error.message }
   }
 }
 
@@ -73,29 +70,32 @@ export async function POST(
     const { query } = await request.json()
 
     if (!query) {
-      return NextResponse.json({ error: 'Query required', debug: 'no query' }, { status: 400 })
+      return NextResponse.json({ error: 'Query required' }, { status: 400 })
     }
 
     const { shareCode } = await params
-    const token = await getValidToken(shareCode)
+    const result = await getValidToken(shareCode)
 
-    if (!token) {
-      return NextResponse.json({ error: 'Invalid playlist', debug: 'no token from getValidToken' }, { status: 404 })
+    if (!result.success) {
+      return NextResponse.json({ 
+        error: 'Token validation failed', 
+        details: result.error 
+      }, { status: 401 })
     }
 
     const response = await fetch(
       `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
       {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Authorization': `Bearer ${result.token}` }
       }
     )
 
     if (!response.ok) {
       const errorText = await response.text()
       return NextResponse.json({ 
-        error: 'Spotify API error', 
+        error: 'Spotify search failed',
         status: response.status,
-        details: errorText 
+        details: errorText
       }, { status: response.status })
     }
 
@@ -103,9 +103,8 @@ export async function POST(
     return NextResponse.json(data)
   } catch (error: any) {
     return NextResponse.json({ 
-      error: 'Internal server error',
-      message: error.message,
-      stack: error.stack 
+      error: 'Internal error',
+      message: error.message
     }, { status: 500 })
   }
 }
