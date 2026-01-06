@@ -12,6 +12,7 @@ async function getValidToken(shareCode: string) {
   if (!playlist) return null
 
   let token = decrypt(playlist.spotify_access_token)
+  const refreshToken = decrypt(playlist.spotify_refresh_token) // Decrypt here
 
   // Try the token
   const testResponse = await fetch('https://api.spotify.com/v1/me', {
@@ -20,10 +21,16 @@ async function getValidToken(shareCode: string) {
 
   // If expired, refresh it
   if (testResponse.status === 401) {
-    const refreshResponse = await fetch(`https://accounts.spotify.com/api/token`, {
+    const refreshResponse = await fetch('https://accounts.spotify.com/api/token', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh_token: encrypt(playlist.spotify_refresh_token) })
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded', // Changed from application/json
+        'Authorization': 'Basic ' + Buffer.from(`${process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`).toString('base64')
+      },
+      body: new URLSearchParams({ // Changed from JSON.stringify
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken // Use decrypted token, not encrypted
+      })
     })
 
     const refreshData = await refreshResponse.json()
