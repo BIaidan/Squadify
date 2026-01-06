@@ -20,7 +20,7 @@ async function getValidToken(shareCode: string) {
 
   // If expired, refresh it
   if (testResponse.status === 401) {
-    const refreshResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/refresh-token`, {
+    const refreshResponse = await fetch(`https://accounts.spotify.com/api/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh_token: encrypt(playlist.spotify_refresh_token) })
