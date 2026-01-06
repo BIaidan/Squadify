@@ -71,23 +71,18 @@ export async function POST(
 ) {
   try {
     const { query } = await request.json()
-    console.log('Search query:', query)
 
     if (!query) {
-      return NextResponse.json({ error: 'Query required' }, { status: 400 })
+      return NextResponse.json({ error: 'Query required', debug: 'no query' }, { status: 400 })
     }
 
     const { shareCode } = await params
-    console.log('Share code:', shareCode)
-    
     const token = await getValidToken(shareCode)
 
     if (!token) {
-      console.log('No valid token found')
-      return NextResponse.json({ error: 'Invalid playlist' }, { status: 404 })
+      return NextResponse.json({ error: 'Invalid playlist', debug: 'no token from getValidToken' }, { status: 404 })
     }
 
-    console.log('Making Spotify search request')
     const response = await fetch(
       `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
       {
@@ -95,13 +90,22 @@ export async function POST(
       }
     )
 
-    console.log('Spotify search status:', response.status)
+    if (!response.ok) {
+      const errorText = await response.text()
+      return NextResponse.json({ 
+        error: 'Spotify API error', 
+        status: response.status,
+        details: errorText 
+      }, { status: response.status })
+    }
+
     const data = await response.json()
-    console.log('Search results:', data.tracks?.items?.length || 0, 'tracks')
-    
     return NextResponse.json(data)
-  } catch (error) {
-    console.error('Search route error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } catch (error: any) {
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      message: error.message,
+      stack: error.stack 
+    }, { status: 500 })
   }
 }
