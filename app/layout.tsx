@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: "Squadify",
   description: "Collaborative Spotify playlists for non-Spotify users",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icon.png",
   },
 };
 

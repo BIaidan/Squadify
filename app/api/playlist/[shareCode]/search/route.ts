@@ -23,8 +23,7 @@ async function getValidToken(shareCode: string) {
     })
 
     // If expired, refresh it
-    // Forcing refresh every search cause something is broken here, will fix later
-    if (/*testResponse.status === 401*/true) {
+    if (testResponse.status === 401) {
       const refreshResponse = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: {

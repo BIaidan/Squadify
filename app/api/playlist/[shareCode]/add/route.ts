@@ -17,12 +17,11 @@ async function getValidToken(shareCode: string) {
     headers: { 'Authorization': `Bearer ${token}` }
   })
 
-  // Forcing refresh every search cause something is broken here, will fix later
-  if (/*testResponse.status === 401*/true) {
+  if (testResponse.status === 401) {
     const refreshResponse = await fetch(`https://accounts.spotify.com/api/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh_token: encrypt(playlist.spotify_refresh_token) })
+      body: JSON.stringify({ refresh_token: playlist.spotify_refresh_token })
     })
 
     const refreshData = await refreshResponse.json()
