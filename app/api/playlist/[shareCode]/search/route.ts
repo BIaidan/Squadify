@@ -74,6 +74,8 @@ async function getValidToken(shareCode: string) {
         .from('shared_playlists')
         .update({ spotify_access_token: encrypt(token) })
         .eq('id', playlist.id)
+
+      console.log("Retrying with new access token")
     }
 
     return { success: true, token }
@@ -98,12 +100,12 @@ export async function POST(
     const result = await getValidToken(shareCode)
     console.log("After calling getValidToken() from POST")
 
-    if (!result.success) {
+    /*if (!result.success) {
       return NextResponse.json({ 
         error: 'Token validation failed', 
         details: result.error 
       }, { status: 401 })
-    }
+    }*/
 
     console.log("Fetching Spotify search results")
     const response = await fetch(
