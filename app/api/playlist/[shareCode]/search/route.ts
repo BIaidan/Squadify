@@ -18,7 +18,7 @@ async function getValidToken(shareCode: string) {
     const refreshToken = decrypt(playlist.spotify_refresh_token)
 
     // Try the token
-    console.log("Testing current access token")
+    console.log("Testing current access token which looks like:", token)
     const testResponse = await fetch('https://api.spotify.com/v1/me', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
