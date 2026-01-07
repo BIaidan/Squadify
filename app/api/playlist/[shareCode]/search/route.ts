@@ -50,12 +50,6 @@ async function getValidToken(shareCode: string) {
         })
       })
       console.log("After fetching new access token from Spotify")
-
-      //
-      console.log('Refresh response status:', refreshResponse.status)
-      const responseBody = await refreshResponse.text()
-      console.log('Refresh response body:', responseBody)
-
       console.log("Before checking refreshResponse.ok")
       if (!refreshResponse.ok) {
         const errorText = await refreshResponse.text()
@@ -64,6 +58,11 @@ async function getValidToken(shareCode: string) {
 
       console.log("Before parsing refresh data")
       const refreshData = await refreshResponse.json()
+      //
+      console.log('Refresh response status:', refreshResponse.status)
+      console.log('Refresh response body:', refreshData)
+
+      
       
       console.log("Before checking refreshData.access_token")
       if (!refreshData.access_token) {
