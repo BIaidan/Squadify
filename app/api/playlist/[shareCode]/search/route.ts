@@ -68,6 +68,26 @@ async function getValidToken(shareCode: string) {
       }
 
       token = refreshData.access_token
+
+      // Test new access token
+      console.log("Testing new access token")
+      const testResponse = await fetch('https://api.spotify.com/v1/me', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const testData = await testResponse.json();
+      if (!testResponse.ok) {
+        console.error('❌ Token test failed:', testData);
+        throw new Error('New Spotify access token is invalid');
+      }
+
+      console.log('✅ Spotify token is valid');
+      console.log('User:', {
+        id: testData.id,
+        display_name: testData.display_name,
+      });
       
       // Update token in database
       await supabaseAdmin
@@ -75,7 +95,7 @@ async function getValidToken(shareCode: string) {
         .update({ spotify_access_token: encrypt(token) })
         .eq('id', playlist.id)
 
-      console.log("Retrying with new access token")
+      console.log("Retrying with new access token, length: ", token.length)
     }
 
     return { success: true, token }
