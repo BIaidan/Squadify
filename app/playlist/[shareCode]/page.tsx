@@ -6,6 +6,9 @@ import { useParams } from 'next/navigation'
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react'
 
 export default function SharedPlaylist() {
+    console.log("Testing console log")
+    console.error("Testing console error")
+
   const params = useParams()
   const shareCode = params.shareCode
   

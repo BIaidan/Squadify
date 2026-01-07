@@ -24,6 +24,14 @@ async function getValidToken(shareCode: string) {
 
     // If expired, refresh it
     if (testResponse.status === 401) {
+      //
+      console.log('=== TOKEN REFRESH ATTEMPT ===')
+      console.log('CLIENT_ID exists:', !!process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID)
+      console.log('CLIENT_SECRET exists:', !!process.env.SPOTIFY_CLIENT_SECRET)
+      console.log('CLIENT_ID length:', process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID?.length)
+      console.log('CLIENT_SECRET length:', process.env.SPOTIFY_CLIENT_SECRET?.length)
+      console.log('Refresh token length:', refreshToken.length)
+
       const refreshResponse = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: {
@@ -35,6 +43,11 @@ async function getValidToken(shareCode: string) {
           refresh_token: refreshToken
         })
       })
+
+      //
+      console.log('Refresh response status:', refreshResponse.status)
+      const responseBody = await refreshResponse.text()
+      console.log('Refresh response body:', responseBody)
 
       if (!refreshResponse.ok) {
         const errorText = await refreshResponse.text()
