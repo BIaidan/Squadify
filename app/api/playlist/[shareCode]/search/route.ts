@@ -27,7 +27,7 @@ async function getValidToken(shareCode: string) {
 
     console.log("Before 401 check")
     // If expired, refresh it
-    if (/*testResponse.status === 401*/true) {
+    if (testResponse.status === 401) {
       //
       console.log("Token is 401, refreshing...")
       console.log('=== TOKEN REFRESH ATTEMPT ===')
