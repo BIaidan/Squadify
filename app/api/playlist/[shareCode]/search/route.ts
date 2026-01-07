@@ -19,6 +19,7 @@ async function getValidToken(shareCode: string) {
 
     // Try the token
     console.log("Testing current access token which looks like:", token)
+    console.log("Access token length: ", token.length)
     const testResponse = await fetch('https://api.spotify.com/v1/me', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -26,7 +27,7 @@ async function getValidToken(shareCode: string) {
 
     console.log("Before 401 check")
     // If expired, refresh it
-    if (testResponse.status === 401) {
+    if (/*testResponse.status === 401*/true) {
       //
       console.log("Token is 401, refreshing...")
       console.log('=== TOKEN REFRESH ATTEMPT ===')
