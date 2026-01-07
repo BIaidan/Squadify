@@ -116,6 +116,7 @@ export async function POST(
     )
     console.log("After fetching Spotify search results")
 
+    console.log("Spotify search response status:", response.status)
     if (!response.ok) {
       const errorText = await response.text()
       return NextResponse.json({ 
