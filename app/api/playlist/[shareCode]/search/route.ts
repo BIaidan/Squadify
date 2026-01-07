@@ -18,13 +18,17 @@ async function getValidToken(shareCode: string) {
     const refreshToken = decrypt(playlist.spotify_refresh_token)
 
     // Try the token
+    console.log("Testing current access token")
     const testResponse = await fetch('https://api.spotify.com/v1/me', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
+    console.log("After testing current access token, status:", testResponse.status)
 
+    console.log("Before 401 check")
     // If expired, refresh it
     if (testResponse.status === 401) {
       //
+      console.log("Token is 401, refreshing...")
       console.log('=== TOKEN REFRESH ATTEMPT ===')
       console.log('CLIENT_ID exists:', !!process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID)
       console.log('CLIENT_SECRET exists:', !!process.env.SPOTIFY_CLIENT_SECRET)
@@ -32,6 +36,7 @@ async function getValidToken(shareCode: string) {
       console.log('CLIENT_SECRET length:', process.env.SPOTIFY_CLIENT_SECRET?.length)
       console.log('Refresh token length:', refreshToken.length)
 
+      console.log("Fetching new access token from Spotify")
       const refreshResponse = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: {
@@ -43,6 +48,7 @@ async function getValidToken(shareCode: string) {
           refresh_token: refreshToken
         })
       })
+      console.log("After fetching new access token from Spotify")
 
       //
       console.log('Refresh response status:', refreshResponse.status)
@@ -87,7 +93,9 @@ export async function POST(
     }
 
     const { shareCode } = await params
+    console.log("Calling getValidToken() from POST")
     const result = await getValidToken(shareCode)
+    console.log("After calling getValidToken() from POST")
 
     if (!result.success) {
       return NextResponse.json({ 
@@ -96,12 +104,14 @@ export async function POST(
       }, { status: 401 })
     }
 
+    console.log("Fetching Spotify search results")
     const response = await fetch(
       `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
       {
         headers: { 'Authorization': `Bearer ${result.token}` }
       }
     )
+    console.log("After fetching Spotify search results")
 
     if (!response.ok) {
       const errorText = await response.text()

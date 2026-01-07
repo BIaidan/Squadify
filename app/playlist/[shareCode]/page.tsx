@@ -39,11 +39,13 @@ export default function SharedPlaylist() {
 
     setSearching(true)
 
+    console.log("Fetching from searchSpotify()")
     const response = await fetch(`/api/playlist/${shareCode}/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: searchQuery })
     })
+    console.log("After fetch from searchSpotify()")
 
     const data = await response.json()
     setSearchResults(data.tracks?.items || [])
