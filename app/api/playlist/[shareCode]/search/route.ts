@@ -56,17 +56,21 @@ async function getValidToken(shareCode: string) {
       const responseBody = await refreshResponse.text()
       console.log('Refresh response body:', responseBody)
 
+      console.log("Before checking refreshResponse.ok")
       if (!refreshResponse.ok) {
         const errorText = await refreshResponse.text()
         throw new Error(`Token refresh failed (${refreshResponse.status}): ${errorText}`)
       }
 
+      console.log("Before parsing refresh data")
       const refreshData = await refreshResponse.json()
       
+      console.log("Before checking refreshData.access_token")
       if (!refreshData.access_token) {
         throw new Error('No access token in refresh response: ' + JSON.stringify(refreshData))
       }
 
+      console.log("Setting new access token")
       token = refreshData.access_token
 
       // Test new access token
