@@ -6,9 +6,6 @@ import { useParams } from 'next/navigation'
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react'
 
 export default function SharedPlaylist() {
-    console.log("Testing console log")
-    console.error("Testing console error")
-
   const params = useParams()
   const shareCode = params.shareCode
   
@@ -39,13 +36,11 @@ export default function SharedPlaylist() {
 
     setSearching(true)
 
-    console.log("Fetching from searchSpotify()")
     const response = await fetch(`/api/playlist/${shareCode}/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: searchQuery })
     })
-    console.log("After fetch from searchSpotify()")
 
     const data = await response.json()
     setSearchResults(data.tracks?.items || [])

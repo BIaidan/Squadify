@@ -18,26 +18,11 @@ async function getValidToken(shareCode: string) {
     const refreshToken = decrypt(playlist.spotify_refresh_token)
 
     // Try the token
-    console.log("Testing current access token which looks like:", token)
-    console.log("Access token length: ", token.length)
     const testResponse = await fetch('https://api.spotify.com/v1/me', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
-    console.log("After testing current access token, status:", testResponse.status)
-
-    console.log("Before 401 check")
     // If expired, refresh it
     if (testResponse.status === 401) {
-      //
-      console.log("Token is 401, refreshing...")
-      console.log('=== TOKEN REFRESH ATTEMPT ===')
-      console.log('CLIENT_ID exists:', !!process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID)
-      console.log('CLIENT_SECRET exists:', !!process.env.SPOTIFY_CLIENT_SECRET)
-      console.log('CLIENT_ID length:', process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID?.length)
-      console.log('CLIENT_SECRET length:', process.env.SPOTIFY_CLIENT_SECRET?.length)
-      console.log('Refresh token length:', refreshToken.length)
-
-      console.log("Fetching new access token from Spotify")
       const refreshResponse = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: {
@@ -49,56 +34,23 @@ async function getValidToken(shareCode: string) {
           refresh_token: refreshToken
         })
       })
-      console.log("After fetching new access token from Spotify")
-      console.log("Before checking refreshResponse.ok")
       if (!refreshResponse.ok) {
         const errorText = await refreshResponse.text()
         throw new Error(`Token refresh failed (${refreshResponse.status}): ${errorText}`)
       }
 
-      console.log("Before parsing refresh data")
       const refreshData = await refreshResponse.json()
-      //
-      console.log('Refresh response status:', refreshResponse.status)
-      console.log('Refresh response body:', refreshData)
-
-      
-      
-      console.log("Before checking refreshData.access_token")
       if (!refreshData.access_token) {
         throw new Error('No access token in refresh response: ' + JSON.stringify(refreshData))
       }
 
-      console.log("Setting new access token")
       token = refreshData.access_token
 
-      // Test new access token
-      console.log("Testing new access token")
-      const testResponse = await fetch('https://api.spotify.com/v1/me', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const testData = await testResponse.json();
-      if (!testResponse.ok) {
-        console.error('❌ Token test failed:', testData);
-        throw new Error('New Spotify access token is invalid');
-      }
-
-      console.log('✅ Spotify token is valid');
-      console.log('User:', {
-        id: testData.id,
-        display_name: testData.display_name,
-      });
-      
       // Update token in database
       await supabaseAdmin
         .from('shared_playlists')
         .update({ spotify_access_token: encrypt(token) })
         .eq('id', playlist.id)
-
-      console.log("Retrying with new access token, length: ", token.length)
     }
 
     return { success: true, token }
@@ -119,27 +71,22 @@ export async function POST(
     }
 
     const { shareCode } = await params
-    console.log("Calling getValidToken() from POST")
     const result = await getValidToken(shareCode)
-    console.log("After calling getValidToken() from POST")
 
-    /*if (!result.success) {
+    if (!result.success) {
       return NextResponse.json({ 
         error: 'Token validation failed', 
         details: result.error 
       }, { status: 401 })
-    }*/
+    }
 
-    console.log("Fetching Spotify search results")
     const response = await fetch(
       `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
       {
         headers: { 'Authorization': `Bearer ${result.token}` }
       }
     )
-    console.log("After fetching Spotify search results")
 
-    console.log("Spotify search response status:", response.status)
     if (!response.ok) {
       const errorText = await response.text()
       return NextResponse.json({ 

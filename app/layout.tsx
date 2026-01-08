@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Squadify",
-  description: "Collaborative Spotify playlists for non-Spotify users",
+  description: "Spotify playlist collaboration for non-Spotify users",
   icons: {
-    icon: "/icon.png",
+    icon: "/favicon.ico",
   },
 };
 
