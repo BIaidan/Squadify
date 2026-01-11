@@ -29,6 +29,11 @@ body {
 }
 
 @layer components{
+  .underline-on-hover:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
   .welcome {
     height: 90vh;
     display: flex;
@@ -385,28 +390,136 @@ body {
     background-color: rgb(80, 80, 80);
   }
   
-  .collaborate-header {
+  .collab-header {
     padding: max(20px, 3vh);
   }
 
-  .collaborate-section {
+  .collab-section {
     max-width: 60em;
     margin: 0 auto;
     font-size: 2vh;
   }
 
-  .playlist-embed {
-    position: relative;
+  .collab-pl-section {
+    display: flex;
     width: min(90%, 1000px);
-    height: 170px;
-    overflow: hidden;
+    max-height: 20vh;
+    background-color: #1f1f1f;
     margin-inline: auto;
+    border-radius: 1em;
   }
 
-  .playlist-embed iframe {
-    position: absolute;
+  .collab-pl-cover-link {
+    height: fit-content;
+    width: fit-content;
+    padding: 1em;
+  }
+
+  .collab-pl-cover {
+    width: 20vh;
+    border-radius: 1em;
+    transition: all 0.1s ease;
+  }
+
+  .collab-pl-cover:hover {
+    transform: scale(1.05);
+  }
+
+  .collab-pl-name {
+    font-weight: bold;
+    padding: 0.5em;
+  }
+
+  .collab-pl-tracks {
     width: 100%;
-    height: 100%;
+    max-width: 1000px;
+  }
+  
+  .collab-pl-tracks-fade-container {
+    position: relative;
+    max-height: 70vh;
+  }
+
+  .collab-pl-tracks-fade-container::before,
+  .collab-pl-tracks-fade-container::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1em; /* Adjust fade height */
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .collab-pl-tracks-fade-container::before {
+    top: 0;
+    background: linear-gradient(to bottom, #1f1f1f 0%, transparent 100%);
+  }
+
+  .collab-pl-tracks-fade-container::after {
+    bottom: 0;
+    background: linear-gradient(to top, #1f1f1f 0%, transparent 100%);
+  }
+
+  .collab-pl-tracks-scroll {
+    position: relative;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5em;
+    border-radius: 1em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+
+  .collab-pl-tracks-scrollbar {
+    max-height: 13vh;
+  }
+
+  .collab-pl-track-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.5em;
+    gap: 0.5em;
+    padding: 1em;
+    background-color: var(--background);
+    border-radius: 1em;
+    transition: background-color 0.2s ease;
+    margin-right: auto;
+    width: 100%;
+  }
+
+  .collab-pl-track-cover {
+    width: 4em;
+    height: 4em;
+    padding: 0.5em;
+    border-radius: 1.2em;
+    object-fit: cover;
+  }
+
+  .collab-pl-track-info {
+    text-align: left;
+    margin-right: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .collab-pl-track-name {
+    font-weight: bold;
+  }
+
+  .collab-pl-track-artists {
+    font-size: 0.8em;
+    color: rgb(180, 180, 180);
+  }
+
+  .collab-pl-track-button-delete {
+    margin-left: auto;
+    background-color: rgb(80, 80, 80);
+    cursor: pointer;
   }
 
   .search-section {
@@ -545,24 +658,12 @@ body {
   .track-button-add {
     background-color: rgb(80, 80, 80);
     color: white;
-    font-size: 1em;
+    font-size: 1.3em;
     font-weight: bold;
-    padding: .5em 1.5em;
+    padding: .5em 0.9em;
     border: none;
-    border-radius: 3em;
+    border-radius: 100%;
     cursor: pointer;
-    transition: all 0.2s ease;
-    margin-right: 1em;
-  }
-
-  .track-button-added {
-    background-color: rgb(60, 60, 60);
-    color: rgb(150, 150, 150);
-    font-size: 1em;
-    font-weight: bold;
-    padding: .5em 1.5em;
-    border: none;
-    border-radius: 3em;
     transition: all 0.2s ease;
     margin-right: 1em;
   }

@@ -106,42 +106,36 @@ export default function SharedPlaylist() {
     }
   }
 
+  async function deleteTrack(track: Track) {
+    return
+  }
+
   if (!playlistData) return <div>Playlist not found</div>
 
   return (
     <div>
-        <div className="collaborate-header">
+        <div className="collab-header">
             <img src="/logo_text.png" alt="Squadify Logo" className="logo"/>
         </div>
         <h2 className="sub-header">You've been invited to collaborate on a playlist!</h2>
 
-        <div className="collaborate-section">
-            {/*
-            <div className="playlist-embed">
-                <iframe 
-                    src={`https://open.spotify.com/embed/playlist/${playlistData.playlist_id}`}
-                    allow="encrypted-media"
-                ></iframe>
-            </div>
-            */}
-            <div className="collab-playlist-section">
-                <div className="collab-playlist-info">
-                    <a href={"https://open.spotify.com/playlist/" + playlistData.playlist_id}>
-                        <img 
-                            className="collab-playlist-cover"
-                            src={playlistData.playlist_image}>
-                        </img>
-                    </a>
+        <div className="collab-section">
+            <div className="collab-pl-section">
+                <a className="collab-pl-cover-link" href={"https://open.spotify.com/playlist/" + playlistData.playlist_id} target="_blank" rel="noopener noreferrer">
+                    <img 
+                        className="collab-pl-cover"
+                        src={playlistData.playlist_image}>
+                    </img>
+                </a>
+
+                <div className="collab-pl-tracks">
                     <a 
-                        className="collab-playlist-name" 
-                        href={"https://open.spotify.com/playlist/" + playlistData.playlist_id}
+                        className="collab-pl-name underline-on-hover" 
+                        href={"https://open.spotify.com/playlist/" + playlistData.playlist_id} target="_blank" rel="noopener noreferrer"
                     >
                         {playlistData.playlist_name}
                     </a>
-                </div>
-
-                <div className="collab-playlist-tracks">
-                    <div className="collab-playlist-tracks-fade-container">
+                    <div className="collab-pl-tracks-fade-container">
                         <OverlayScrollbarsComponent 
                             options={{
                                 scrollbars: {
@@ -151,22 +145,27 @@ export default function SharedPlaylist() {
                                 overflow: { x: 'hidden', y: 'scroll' },
                                 paddingAbsolute: true
                             }}
-                            className="tracks-scrollbar"
+                            className="collab-pl-tracks-scrollbar"
                         >
-                            <div className="collab-playlist-tracks-scroll">
-                                {tracks.map((track: Track) => (
-                                    <div key={track.id} className="playlist-track-card">
+                            <div className="collab-pl-tracks-scroll">
+                                {tracks.map((track: Track, index: number) => (
+                                    <div key={track.id} className="collab-pl-track-card">
+                                        <p className="collab-pl-track-number">{index + 1}</p>
                                         <img 
-                                            className="track-cover"
+                                            className="collab-pl-track-cover"
                                             src={track.album.images[2]?.url || track.album.images[0]?.url} 
                                             alt={track.name}
                                         />
-                                        <div className="track-info">
-                                            <h3 className="track-name">{track.name}</h3>
-                                            <p>
-                                                {track.artists.map((artist: any) => artist.name).join(', ')}
-                                            </p>
-                                        </div>
+                                        <h3 className="collab-pl-track-name underline-on-hover">{track.name}</h3>
+                                        <p className="collab-pl-track-artists underline-on-hover">
+                                            • {track.artists.map((artist: any) => artist.name).join(', ')}
+                                        </p>
+                                        <button 
+                                            className="collab-pl-track-button-delete"
+                                            onClick={() => deleteTrack(track)}
+                                        >
+                                            Delete
+                                        </button>
                                     </div>
                                 ))}
                                 
