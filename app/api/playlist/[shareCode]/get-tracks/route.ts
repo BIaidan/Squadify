@@ -6,24 +6,27 @@ export async function POST(
   { params }: { params: Promise<{ shareCode: string }> }
 ) {
   try {
-    const { query } = await request.json()
+    console.log('API: Received request to get tracks')
+    const { playlistId, tracksLength } = await request.json()
 
-    if (!query) {
-      return NextResponse.json({ error: 'Query required' }, { status: 400 })
+    console.log('1')
+    if (!playlistId) {
+      return NextResponse.json({ error: 'Playlist URI required' }, { status: 400 })
     }
 
+    console.log('2')
     const { shareCode } = await params
+    console.log('3')
     const result = await getValidToken(shareCode)
 
-    if (!result.success) {
-      return NextResponse.json({ 
-        error: 'Token validation failed', 
-        details: result.error 
-      }, { status: 401 })
+    console.log('4')
+    if (!result) {
+        return NextResponse.json({ error: 'Invalid playlist' }, { status: 404 })
     }
 
+    console.log('API: Fetching tracks for playlist:', playlistId, 'from offset:', tracksLength)
     const response = await fetch(
-      `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
+      `https://api.spotify.com/v1/playlists/${playlistId}/tracks?offset=${tracksLength}&limit=50`,
       {
         headers: { 'Authorization': `Bearer ${result.token}` }
       }
@@ -32,7 +35,7 @@ export async function POST(
     if (!response.ok) {
       const errorText = await response.text()
       return NextResponse.json({ 
-        error: 'Spotify search failed',
+        error: 'Failed to fetch tracks',
         status: response.status,
         details: errorText
       }, { status: response.status })
