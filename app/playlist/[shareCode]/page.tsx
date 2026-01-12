@@ -158,13 +158,13 @@ export default function SharedPlaylist() {
                                         />
                                         <h3 className="collab-pl-track-name underline-on-hover">{track.name}</h3>
                                         <p className="collab-pl-track-artists underline-on-hover">
-                                            • {track.artists.map((artist: any) => artist.name).join(', ')}
+                                            &nbsp;• {track.artists.map((artist: any) => artist.name).join(', ')}
                                         </p>
                                         <button 
                                             className="collab-pl-track-button-delete"
                                             onClick={() => deleteTrack(track)}
                                         >
-                                            Delete
+                                            <img src="/minus.png" alt="Add" className="collab-pl-track-button-delete-icon"></img>
                                         </button>
                                     </div>
                                 ))}
@@ -226,7 +226,7 @@ export default function SharedPlaylist() {
                                             className="track-button-add"
                                             onClick={() => addTrackToPlaylist(track)}
                                         >
-                                            +
+                                            <img src="/plus.png" alt="Add" className="track-button-add-icon"></img>
                                         </button>
                                     </div>
                                 ))}

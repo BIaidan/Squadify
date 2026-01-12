@@ -402,22 +402,24 @@ body {
 
   .collab-pl-section {
     display: flex;
+    align-items: center;
     width: min(90%, 1000px);
-    max-height: 20vh;
+    height: 20vh;
     background-color: #1f1f1f;
     margin-inline: auto;
     border-radius: 1em;
+    padding: 1em;
   }
 
   .collab-pl-cover-link {
     height: fit-content;
     width: fit-content;
-    padding: 1em;
+    padding-right: 1em;
   }
 
   .collab-pl-cover {
     width: 20vh;
-    border-radius: 1em;
+    border-radius: 0.5em;
     transition: all 0.1s ease;
   }
 
@@ -427,6 +429,7 @@ body {
 
   .collab-pl-name {
     font-weight: bold;
+    font-size: 1.3em;
     padding: 0.5em;
   }
 
@@ -481,30 +484,31 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 0.5em;
-    gap: 0.5em;
-    padding: 1em;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 1em;
     background-color: var(--background);
-    border-radius: 1em;
+    border-radius: 0.6em;
+    padding: 0.3em;
     transition: background-color 0.2s ease;
     margin-right: auto;
     width: 100%;
   }
 
-  .collab-pl-track-cover {
-    width: 4em;
-    height: 4em;
-    padding: 0.5em;
-    border-radius: 1.2em;
-    object-fit: cover;
+  .collab-pl-track-number {
+    font-size: 0.7em;
+    color: rgb(180, 180, 180);
+    margin: 0 1em;
   }
 
-  .collab-pl-track-info {
-    text-align: left;
-    margin-right: auto;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .collab-pl-track-cover {
+    width: 2em;
+    height: 2em;
+    border-radius: 0.3em;
+    object-fit: cover;
+    margin-right: 0.5em;
   }
 
   .collab-pl-track-name {
@@ -512,14 +516,31 @@ body {
   }
 
   .collab-pl-track-artists {
-    font-size: 0.8em;
+    font-size: 0.7em;
     color: rgb(180, 180, 180);
   }
 
   .collab-pl-track-button-delete {
     margin-left: auto;
+    margin-right: 0.5em;
     background-color: rgb(80, 80, 80);
     cursor: pointer;
+    padding: 0.5em;
+    border-radius: 50%;
+    transition: all 0.1s ease;
+  }
+
+  .collab-pl-track-button-delete:hover {
+    transform: scale(1.1);
+  }
+
+  .collab-pl-track-button-delete:active {
+    transform: scale(0.9);
+  }
+
+  .collab-pl-track-button-delete-icon {
+    width: 0.5em;
+    height: 0.5em;
   }
 
   .search-section {
@@ -658,23 +679,27 @@ body {
   .track-button-add {
     background-color: rgb(80, 80, 80);
     color: white;
-    font-size: 1.3em;
+    font-size: 1.8em;
     font-weight: bold;
-    padding: .5em 0.9em;
+    padding: 0.5em;
     border: none;
-    border-radius: 100%;
+    border-radius: 50%;
     cursor: pointer;
     transition: all 0.2s ease;
     margin-right: 1em;
   }
-
+  
   .track-button-add:hover {
     background-color: rgb(100, 100, 100);
-    transform: scale(1.05);
+    transform: scale(1.1);
   }
 
   .track-button-add:active {
-    transform: scale(0.95);
+    transform: scale(0.5);
   }
 
+  .track-button-add-icon {
+    width: 0.5em;
+    height: 0.5em;
+  }
 }
