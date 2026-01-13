@@ -25,11 +25,14 @@ export default function SharedPlaylist() {
   const [searchResults, setSearchResults] = useState<Track[]>([])
   const [searching, setSearching] = useState(false)
   const [tracks, setTracks] = useState<Track[]>([])
+  const [addedTracks, setAddedTracks] = useState<Track[]>([])
+  const [numTracks, setNumTracks] = useState(0)
+  const [loadingTracks, setLoadingTracks] = useState(false)
 
   useEffect(() => {
-    async function loadPlaylist(tracksLength: number) {
-        let response = await fetch(`/api/playlist/${shareCode}`)
-        let data = await response.json()
+    async function loadPlaylist() {
+        const response = await fetch(`/api/playlist/${shareCode}`)
+        const data = await response.json()
 
         if (data.error) {
             console.error('Playlist not found:', data.error)
@@ -37,31 +40,42 @@ export default function SharedPlaylist() {
         }
 
         setPlaylistData(data)
+        await loadTracks(data.playlist_id, tracks.length)
 
         console.log('Playlist data loaded:', data)
         console.log('Loading tracks for playlist:', data.playlist_id)
-        response = await fetch(`/api/playlist/${shareCode}/get-tracks`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ playlistId: data.playlist_id, tracksLength })
-        })
-
-        if (data.error) {
-            console.error('Failed to fetch tracks: ', data.error)
-            return
-        }
-
-        data = await response.json()
-        const loadedTracks = data.items.map((item: any) => item.track)
-        setTracks(tracks.concat(loadedTracks))
-        console.log('Fetched playlist tracks:', data)
-        console.log('Tracks state updated:', tracks)
     }
 
-    loadPlaylist(tracks?.length)
+    
+
+    loadPlaylist()
   }, [shareCode])
 
-  
+  async function loadTracks(playlistId: string, tracksLength: number) {
+    if (loadingTracks) return
+    if (tracksLength >= numTracks && numTracks !== 0) return
+    setLoadingTracks(true)
+
+    const response = await fetch(`/api/playlist/${shareCode}/get-tracks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ playlistId: playlistId, tracksLength })
+    })
+
+    const data = await response.json()
+
+    if (data.error) {
+        console.error('Failed to fetch tracks: ', data.error)
+        return
+    }
+
+    const loadedTracks = data.items.map((item: any) => item.track)
+    setTracks(tracks.concat(loadedTracks))
+    setNumTracks(data.total)
+    console.log('Fetched playlist tracks:', data)
+    console.log('Tracks state updated:', tracks)
+    setLoadingTracks(false)
+  }
 
   async function searchSpotify() {
     if (!searchQuery.trim()) return
@@ -100,6 +114,7 @@ export default function SharedPlaylist() {
     
     if (data.success) {
         setTracks(tracks.concat([track]))
+        setAddedTracks(addedTracks.concat([track]))
         console.log('Song added to playlist!')
     } else {
         console.log('Failed to add song')
@@ -110,6 +125,17 @@ export default function SharedPlaylist() {
     return
   }
 
+  function handleScroll(instance: any) {
+    const scrollInfo = instance.elements()
+    const { scrollOffsetElement } = scrollInfo
+    const { scrollTop, scrollHeight, clientHeight } = scrollOffsetElement
+
+    // Check if scrolled to bottom (with small threshold)
+    if (scrollHeight - scrollTop - clientHeight < 50) {
+        loadTracks(playlistData.playlist_id, tracks.length)
+    }
+  }
+
   if (!playlistData) return <div>Playlist not found</div>
 
   return (
@@ -117,7 +143,43 @@ export default function SharedPlaylist() {
         <div className="collab-header">
             <img src="/logo_text.png" alt="Squadify Logo" className="logo"/>
         </div>
-        <h2 className="sub-header">You've been invited to collaborate on a playlist!</h2>
+        {addedTracks.length == 0 ? (
+            <h2 className="sub-header">You've been invited to collaborate on a playlist!</h2>
+        ) : (
+            <div className="added-tracks-section">
+                <h2 className="added-tracks-header">Added Tracks</h2>
+                <div className="added-tracks-fade-container">
+                    <OverlayScrollbarsComponent 
+                            options={{
+                                scrollbars: {
+                                theme: 'os-theme-light',
+                                autoHideDelay: 800
+                                },
+                                overflow: { x: 'hidden', y: 'scroll' },
+                                paddingAbsolute: true
+                            }}
+                            className="added-tracks-scrollbar"
+                    >
+                        <div className="added-tracks-scroll">
+                            {addedTracks.map((track: Track, index: number) => (
+                                <div key={track.id} className="added-track-card">
+                                    <img 
+                                        className="added-track-cover"
+                                        src={track.album.images[2]?.url || track.album.images[0]?.url} 
+                                        alt={track.name}
+                                    />
+                                    <h3 className="added-track-name underline-on-hover">{track.name}</h3>
+                                    <p className="added-track-artists underline-on-hover">
+                                        {track.artists.map((artist: any) => artist.name).join(', ')}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </OverlayScrollbarsComponent>
+                </div>
+            </div>
+        )}
+        
 
         <div className="collab-section">
             <div className="collab-pl-section">
@@ -145,6 +207,7 @@ export default function SharedPlaylist() {
                                 overflow: { x: 'hidden', y: 'scroll' },
                                 paddingAbsolute: true
                             }}
+                            events={{ scroll: (instance) => handleScroll(instance) }}
                             className="collab-pl-tracks-scrollbar"
                         >
                             <div className="collab-pl-tracks-scroll">
@@ -164,7 +227,7 @@ export default function SharedPlaylist() {
                                             className="collab-pl-track-button-delete"
                                             onClick={() => deleteTrack(track)}
                                         >
-                                            <img src="/minus.png" alt="Add" className="collab-pl-track-button-delete-icon"></img>
+                                            <img src="/minus.png" alt="Delete" className="collab-pl-track-button-delete-icon"></img>
                                         </button>
                                     </div>
                                 ))}
@@ -175,6 +238,7 @@ export default function SharedPlaylist() {
                 </div>
             </div>
 
+            
                 
             <div className="search-section">
                 <h3 className="search-header">Search and Add Tracks</h3>
