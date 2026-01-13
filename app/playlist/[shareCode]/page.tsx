@@ -101,6 +101,9 @@ export default function SharedPlaylist() {
         return
     }
 
+    setAddedTracks(addedTracks.concat([track]))
+    setNumTracks(numTracks + 1)
+
     const trackUri = track?.uri
 
     const response = await fetch(`/api/playlist/${shareCode}/add`, {
@@ -113,8 +116,6 @@ export default function SharedPlaylist() {
 
     
     if (data.success) {
-        setTracks(tracks.concat([track]))
-        setAddedTracks(addedTracks.concat([track]))
         console.log('Song added to playlist!')
     } else {
         console.log('Failed to add song')
@@ -143,45 +144,52 @@ export default function SharedPlaylist() {
         <div className="collab-header">
             <img src="/logo_text.png" alt="Squadify Logo" className="logo"/>
         </div>
-        {addedTracks.length == 0 ? (
-            <h2 className="sub-header">You've been invited to collaborate on a playlist!</h2>
-        ) : (
-            <div className="added-tracks-section">
-                <h2 className="added-tracks-header">Added Tracks</h2>
-                <div className="added-tracks-fade-container">
-                    <OverlayScrollbarsComponent 
-                            options={{
-                                scrollbars: {
-                                theme: 'os-theme-light',
-                                autoHideDelay: 800
-                                },
-                                overflow: { x: 'hidden', y: 'scroll' },
-                                paddingAbsolute: true
-                            }}
-                            className="added-tracks-scrollbar"
-                    >
-                        <div className="added-tracks-scroll">
-                            {addedTracks.map((track: Track, index: number) => (
-                                <div key={track.id} className="added-track-card">
-                                    <img 
-                                        className="added-track-cover"
-                                        src={track.album.images[2]?.url || track.album.images[0]?.url} 
-                                        alt={track.name}
-                                    />
-                                    <h3 className="added-track-name underline-on-hover">{track.name}</h3>
-                                    <p className="added-track-artists underline-on-hover">
-                                        {track.artists.map((artist: any) => artist.name).join(', ')}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    </OverlayScrollbarsComponent>
-                </div>
-            </div>
-        )}
-        
-
         <div className="collab-section">
+            <div className="sub-header-container">
+                {addedTracks.length == 0 ? (
+                    <h2 className="sub-header">You've been invited to collaborate on a playlist!</h2>
+                ) : (
+                    <div className="added-tracks-section">
+                        <h2 className="added-tracks-header">Added</h2>
+                        <div className="added-tracks-fade-container">
+                            <OverlayScrollbarsComponent 
+                                    options={{
+                                        scrollbars: {
+                                        theme: 'os-theme-light',
+                                        autoHideDelay: 800
+                                        },
+                                        overflow: { x: 'hidden', y: 'scroll' },
+                                        paddingAbsolute: true
+                                    }}
+                                    className="added-tracks-scrollbar"
+                            >
+                                <div className="added-tracks-scroll">
+                                    {addedTracks.map((track: Track, index: number) => (
+                                        <div key={track.id} className="added-track-card">
+                                            <img 
+                                                className="added-track-cover"
+                                                src={track.album.images[2]?.url || track.album.images[0]?.url} 
+                                                alt={track.name}
+                                            />
+                                            <h3 className="added-track-name underline-on-hover">{track.name}</h3>
+                                            <p className="added-track-artists underline-on-hover">
+                                                &nbsp;• {track.artists.map((artist: any) => artist.name).join(', ')}
+                                            </p>
+                                            <button 
+                                                className="collab-pl-track-button-delete"
+                                                onClick={() => deleteTrack(track)}
+                                            >
+                                                <img src="/minus.png" alt="Delete" className="collab-pl-track-button-delete-icon"></img>
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </OverlayScrollbarsComponent>
+                        </div>
+                    </div>
+                )}
+            </div>
+        
             <div className="collab-pl-section">
                 <a className="collab-pl-cover-link" href={"https://open.spotify.com/playlist/" + playlistData.playlist_id} target="_blank" rel="noopener noreferrer">
                     <img 

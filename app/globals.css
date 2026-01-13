@@ -217,6 +217,14 @@ body {
     font-weight: bold;
     padding-top: 3em;
     padding-bottom: 1em;
+    height: 20vh;
+  }
+
+  .sub-header-container {
+    height: 20vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .playlists-section {
@@ -395,38 +403,57 @@ body {
   }
 
   .collab-section {
-    max-width: 60em;
+    max-width: 80vw;
     margin: 0 auto;
     font-size: 2vh;
   }
+  
 
   .added-tracks-section {
     display: flex;
     align-items: center;
-    width: min(90%, 1000px);
-    height: 20vh;
     background-color: #1f1f1f;
     border-radius: 1em;
     padding: 1em;
-    margin: 1em;
-    margin-inline: auto;
+    gap: 1em;
+    width: 100%;
   }
 
   .added-tracks-header {
     font-weight: bold;
-    font-size: 1.2em;
-    padding-inline: 1em; 
     text-align: center;
     min-width: 16vh;
   }
 
   .added-tracks-fade-container {
-    max-width: 1000px;
-    min-width: 0;
+    position: relative;
+    max-height: 70vh;
+    flex: 1;
+  }
+
+  .added-tracks-fade-container::before,
+  .added-tracks-fade-container::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1em; /* Adjust fade height */
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .added-tracks-fade-container::before {
+    top: 0;
+    background: linear-gradient(to bottom, #1f1f1f 0%, transparent 100%);
+  }
+
+  .added-tracks-fade-container::after {
+    bottom: 0;
+    background: linear-gradient(to top, #1f1f1f 0%, transparent 100%);
   }
 
   .added-tracks-scrollbar {
-    max-height: 13vh;
+    max-height: 8vh;
   }
 
   .added-tracks-scroll {
@@ -444,7 +471,6 @@ body {
   .added-track-card {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     text-align: left;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -458,7 +484,7 @@ body {
     margin-left: auto;
     width: 100%;
   }
-
+  
   .added-track-cover {
     width: 2em;
     height: 2em;
@@ -482,21 +508,24 @@ body {
     white-space: nowrap;
   }
 
+  .collab-section {
+    width: min(90%, 1000px);
+  }
+
   .collab-pl-section {
     display: flex;
     align-items: center;
-    width: min(90%, 1000px);
     height: 20vh;
     background-color: #1f1f1f;
     margin-inline: auto;
     border-radius: 1em;
     padding: 1em;
+    gap: 1em;
   }
 
   .collab-pl-cover-link {
     height: fit-content;
     width: fit-content;
-    padding-right: 1em;
   }
 
   .collab-pl-cover {
@@ -519,10 +548,11 @@ body {
   }
 
   .collab-pl-tracks {
-    max-width: 1000px;
+    flex: 1;
     min-width: 0;
+    align-items: left;
   }
-  
+
   .collab-pl-tracks-fade-container {
     position: relative;
     max-height: 70vh;
@@ -554,7 +584,7 @@ body {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: left;
     gap: 0.5em;
     border-radius: 1em;
     padding-top: 1em;
@@ -577,17 +607,15 @@ body {
     background-color: var(--background);
     border-radius: 0.6em;
     padding: 0.3em;
-    padding-left: 0.6em;
+    padding-left: 0;
     transition: background-color 0.2s ease;
-    margin-left: auto;
-    width: 100%;
+    /*width: 100%;*/
   }
 
   .collab-pl-track-number {
     font-size: 0.7em;
     color: rgb(180, 180, 180);
-    margin-right: 1em;
-    min-width: 1em;
+    min-width: 2.5em;
     text-align: center;
   }
 
@@ -621,15 +649,15 @@ body {
     cursor: pointer;
     padding: 0.5em;
     border-radius: 50%;
-    transition: all 0.1s ease;
   }
 
   .collab-pl-track-button-delete:hover {
-    transform: scale(1.1);
+    background-color: rgb(100, 100, 100);
+    transform: scale(1.05);
   }
 
   .collab-pl-track-button-delete:active {
-    transform: scale(0.9);
+    transform: scale(0.95);
   }
 
   .collab-pl-track-button-delete-icon {
@@ -746,7 +774,6 @@ body {
     padding: 1em;
     background-color: #1f1f1f;
     border-radius: 1em;
-    transition: background-color 0.2s ease;
     margin-right: auto;
     width: 100%;
   }
@@ -781,17 +808,16 @@ body {
     border: none;
     border-radius: 50%;
     cursor: pointer;
-    transition: all 0.2s ease;
     margin-right: 1em;
   }
   
   .track-button-add:hover {
     background-color: rgb(100, 100, 100);
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
 
   .track-button-add:active {
-    transform: scale(0.5);
+    transform: scale(0.95);
   }
 
   .track-button-add-icon {
