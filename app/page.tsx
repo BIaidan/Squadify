@@ -213,12 +213,16 @@ export default function Home() {
                       <a 
                         className="playlist-name underline-on-hover"
                         href={`https://open.spotify.com/playlist/${playlist.id}`}
+                        target="_blank"
+                        
                       >
                         {playlist.name}
                       </a>
                       <a
                         className="underline-on-hover"
                         href={`https://open.spotify.com/user/${playlist.owner.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
                         {playlist.owner?.display_name}
                       </a>
