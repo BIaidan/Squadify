@@ -307,6 +307,8 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: flex;
+    flex-direction: column;
   }
 
   .playlist-button {
@@ -542,15 +544,19 @@ body {
   .collab-pl-name {
     font-weight: bold;
     font-size: 1.3em;
-    padding: 0.5em;
   }
-
+  
   .collab-pl-tracks {
     flex: 1;
+    display: flex;
+    flex-direction: column;
     min-width: 0;
+    height: 100%;
+    max-height: 100%;
     align-items: left;
+    gap: 0.5em;
   }
-
+  
   .collab-pl-tracks-fade-container {
     position: relative;
     max-height: 70vh;
@@ -590,7 +596,7 @@ body {
   }
 
   .collab-pl-tracks-scrollbar {
-    max-height: 13vh;
+    max-height: 11vh;
   }
 
   .collab-pl-track-card {
@@ -669,9 +675,9 @@ body {
   .search-section {
     margin-bottom: auto;
     margin-top: 1em;
+    margin-inline: auto;
     text-align: center;
   }
-  
   .search-header {
     font-size: 1.1em;
     font-weight: bold;
@@ -682,10 +688,9 @@ body {
     align-items: center;
     background-color: #1f1f1f;
     border-radius: 3em;
-    width: min(90vw, 700px);
+    
     text-align: left;
     margin: 1em 0;
-    margin-inline: auto;
   }
 
   .search-bar input {
@@ -780,8 +785,7 @@ body {
   .track-cover {
     width: 7vh;
     height: 7vh;
-    padding: 0.5em;
-    border-radius: 1.2em;
+    border-radius: 0.7em;
     object-fit: cover;
   }
 

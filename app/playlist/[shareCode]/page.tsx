@@ -153,7 +153,12 @@ export default function SharedPlaylist() {
   return (
     <div>
         <div className="collab-header">
-            <img src="/logo_text.png" alt="Squadify Logo" className="logo"/>
+            <a
+                href="/"
+            >
+                <img src="/logo_text.png" alt="Squadify Logo" className="logo"/>
+            </a>
+            
         </div>
         <div className="collab-section">
             <div className="sub-header-container">
@@ -229,7 +234,12 @@ export default function SharedPlaylist() {
             </div>
         
             <div className="collab-pl-section">
-                <a className="collab-pl-cover-link" href={"https://open.spotify.com/playlist/" + playlistData.playlist_id} target="_blank" rel="noopener noreferrer">
+                <a 
+                    className="collab-pl-cover-link" 
+                    href={`https://open.spotify.com/playlist/${playlistData.playlist_id}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                >
                     <img 
                         className="collab-pl-cover"
                         src={playlistData.playlist_image}>
@@ -280,7 +290,7 @@ export default function SharedPlaylist() {
                                         >
                                             {track.name}
                                         </a>
-                                        <span className="added-track-artists">
+                                        <span className="collab-pl-track-artists">
                                             &nbsp;•{" "}
                                             {track.artists.map((artist: any, index: number) => (
                                                 <span key={artist.id ?? artist.name}>
@@ -348,15 +358,41 @@ export default function SharedPlaylist() {
                             <div className="tracks-scroll">
                                 {searchResults.map((track: Track) => (
                                     <div key={track.id} className="track-card">
-                                        <img 
-                                            className="track-cover"
-                                            src={track.album.images[2]?.url || track.album.images[0]?.url} 
-                                            alt={track.name}
-                                        />
+                                        <a
+                                            href={`https://open.spotify.com/track/${track.id}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <img 
+                                                className="track-cover"
+                                                src={track.album.images[2]?.url || track.album.images[0]?.url} 
+                                                alt={track.name}
+                                            />
+                                        </a>
+                                        
                                         <div className="track-info">
-                                            <h3 className="track-name">{track.name}</h3>
+                                            <a 
+                                                className="track-name underline-on-hover"
+                                                href={`https://open.spotify.com/track/${track.id}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                {track.name}
+                                            </a>
                                             <p>
-                                                {track.artists.map((artist: any) => artist.name).join(', ')}
+                                                {track.artists.map((artist: any, index: number) => (
+                                                    <span key={artist.id ?? artist.name}>
+                                                    <a
+                                                        className="underline-on-hover"
+                                                        href={`https://open.spotify.com/artist/${artist.id}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {artist.name}
+                                                    </a>
+                                                    {index < track.artists.length - 1 && ", "}
+                                                    </span>
+                                                ))}
                                             </p>
                                         </div>
                                         <button 

@@ -13,7 +13,7 @@ export default function Home() {
     id: string
     images: { url: string }[]
     name: string
-    owner: { display_name: string }
+    owner: { id: string, display_name: string }
     tracks: { total: number }
   }
 
@@ -164,7 +164,11 @@ export default function Home() {
       // SELECT PLAYLIST VIEW
       <div>
         <div className="logged-in-header">
-          <img src="/logo_text.png" alt="Squadify Logo" className="logo"/>
+          <a
+            href="/"
+          >
+            <img src="/logo_text.png" alt="Squadify Logo" className="logo"/>
+          </a>
           <div className="user-button">
             <button 
               className="user-button-trigger" 
@@ -197,10 +201,27 @@ export default function Home() {
               <div className="playlists-scroll">
                 {playlists.map(playlist => (
                   <div key={playlist.id} className="playlist-card">
-                    <img src={playlist.images?.[0]?.url} alt={playlist.name} className="playlist-cover"/>
+                    <a
+                      href={`https://open.spotify.com/playlist/${playlist.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img src={playlist.images?.[0]?.url} alt={playlist.name} className="playlist-cover"/>
+                    </a>
+                    
                     <div className="playlist-info">
-                      <h3 className="playlist-name">{playlist.name}</h3>
-                      <p>{playlist.owner?.display_name}</p>
+                      <a 
+                        className="playlist-name underline-on-hover"
+                        href={`https://open.spotify.com/playlist/${playlist.id}`}
+                      >
+                        {playlist.name}
+                      </a>
+                      <a
+                        className="underline-on-hover"
+                        href={`https://open.spotify.com/user/${playlist.owner.id}`}
+                      >
+                        {playlist.owner?.display_name}
+                      </a>
                       <p>{playlist.tracks.total} tracks</p>
                     </div>
                     <button onClick={() => {setShareUrl(null); setCopied(false); setPlaylistSelected(true); createShareLink(playlist)}} className="playlist-button">
@@ -226,7 +247,11 @@ export default function Home() {
       ) : (
         // WELCOME VIEW
         <div className="welcome">
-          <img src="/logo_text.png" alt="Squadify Logo" className="welcome-logo"/>
+          <a
+            href="/"
+          >
+            <img src="/logo_text.png" alt="Squadify Logo" className="welcome-logo"/>
+          </a>
           <button 
             onClick={signInWithSpotify} 
             className="spotify-button"

@@ -6,25 +6,19 @@ export async function POST(
   { params }: { params: Promise<{ shareCode: string }> }
 ) {
   try {
-    console.log('API: Received request to get tracks')
     const { playlistId, tracksLength } = await request.json()
 
-    console.log('1')
     if (!playlistId) {
       return NextResponse.json({ error: 'Playlist URI required' }, { status: 400 })
     }
 
-    console.log('2')
     const { shareCode } = await params
-    console.log('3')
     const result = await getValidToken(shareCode)
 
-    console.log('4')
     if (!result) {
         return NextResponse.json({ error: 'Invalid playlist' }, { status: 404 })
     }
 
-    console.log('API: Fetching tracks for playlist:', playlistId, 'from offset:', tracksLength)
     const response = await fetch(
       `https://api.spotify.com/v1/playlists/${playlistId}/tracks?offset=${tracksLength}&limit=50`,
       {
