@@ -29,6 +29,9 @@ export default function SharedPlaylist() {
   const [numTracks, setNumTracks] = useState(0)
   const [loadingTracks, setLoadingTracks] = useState(false)
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [trackToDelete, setTrackToDelete] = useState<Track>()
+
   useEffect(() => {
     async function loadPlaylist() {
         const response = await fetch(`/api/playlist/${shareCode}`)
@@ -220,7 +223,10 @@ export default function SharedPlaylist() {
                                             </span>
                                             <button 
                                                 className="collab-pl-track-button-delete"
-                                                onClick={() => deleteTrack(track)}
+                                                onClick={() => {
+                                                    setTrackToDelete(track)
+                                                    setShowDeleteModal(true)
+                                                }}
                                             >
                                                 <img src="/minus.png" alt="Delete" className="collab-pl-track-button-delete-icon"></img>
                                             </button>
@@ -308,7 +314,10 @@ export default function SharedPlaylist() {
                                         </span>
                                         <button 
                                             className="collab-pl-track-button-delete"
-                                            onClick={() => deleteTrack(track)}
+                                            onClick={() => {
+                                                setTrackToDelete(track)
+                                                setShowDeleteModal(true)
+                                            }}
                                         >
                                             <img src="/minus.png" alt="Delete" className="collab-pl-track-button-delete-icon"></img>
                                         </button>
@@ -409,6 +418,45 @@ export default function SharedPlaylist() {
                 </div>
             </div>
         </div>
+        {showDeleteModal && (
+            <div 
+                className="delete-modal-overlay" 
+                onClick={() => setShowDeleteModal(false)}
+            >
+                <div 
+                    className="delete-modal-content" 
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <h3>
+                        Delete Track?
+                    </h3>
+                    <p>
+                        Are you sure you want to remove "{trackToDelete?.name}" from the playlist?
+                    </p>
+                    <div 
+                        className="delete-modal-buttons"
+                    >
+                        <button 
+                            className="delete-modal-button-confirm"
+                            onClick={() => {
+                                if (trackToDelete) deleteTrack(trackToDelete)
+                                setShowDeleteModal(false)
+                            }}
+                        >
+                            Delete
+                        </button>
+                        <button 
+                            className="delete-modal-button-cancel"
+                            onClick={() => setShowDeleteModal(false)}
+                        >
+                            Cancel
+                        </button>
+                        
+                    </div>
+                </div>
+            </div>
+            )}
+
     </div>
     
   )
