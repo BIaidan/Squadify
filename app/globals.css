@@ -216,12 +216,14 @@ body {
   }
 
   .sub-header {
+    display: flex;
     text-align: center;
     font-size: min(3vw, 3vh);
     font-weight: bold;
     padding-top: 3em;
     padding-bottom: 1em;
     height: 20vh;
+    align-items: center;
   }
 
   .sub-header-container {
@@ -532,16 +534,9 @@ body {
     gap: 1em;
   }
 
-  .collab-pl-cover-link {
-    height: fit-content;
-    width: fit-content;
-  }
-
   .collab-pl-cover {
-    min-height: 16vh;
-    min-width: 16vh;
-    height: 16vh;
-    width: 16vh;
+    max-height: 16vh;
+    max-width: 16vh;
     border-radius: 0.5em;
   }
 
@@ -598,8 +593,8 @@ body {
     align-items: left;
     gap: 0.5em;
     border-radius: 1em;
-    padding-top: 1em;
-    padding-bottom: 1em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
   }
 
   .collab-pl-tracks-scrollbar {
@@ -685,6 +680,7 @@ body {
     margin-inline: auto;
     text-align: center;
   }
+
   .search-header {
     font-size: 1.1em;
     font-weight: bold;
@@ -695,7 +691,6 @@ body {
     align-items: center;
     background-color: #1f1f1f;
     border-radius: 3em;
-    
     text-align: left;
     margin: 1em 0;
   }
@@ -704,6 +699,8 @@ body {
     padding-left: 1em;
     outline: none;
     box-shadow: none;
+    flex: 1;
+    min-width: 0;
   }
 
   .search-bar input:focus::placeholder {
@@ -717,21 +714,15 @@ body {
     border-radius: 3em;
     cursor: pointer;
     margin-left: auto;
-    width: 10em;
+    min-width: 10em;
   }
-  
+
   .search-button:hover {
     background-color: rgb(100, 100, 100);
   }
   
   .search-button:active {
     background-color: rgb(80, 80, 80);
-  }
-
-  .tracks-section {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 2rem;
   }
 
   .tracks-scroll {
@@ -790,6 +781,8 @@ body {
   }
   
   .track-cover {
+    min-width: 7vh;
+    min-height: 7vh;
     width: 7vh;
     height: 7vh;
     border-radius: 0.7em;
@@ -834,11 +827,9 @@ body {
 
   .track-button-add-icon {
     min-width: 0.5em;
-    min-height: 0.5em;
     width: 0.5em;
-    height: 0.5em;
   }
-
+  
   .delete-modal-overlay {
     position: fixed;
     top: 0;

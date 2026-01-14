@@ -240,17 +240,20 @@ export default function SharedPlaylist() {
             </div>
         
             <div className="collab-pl-section">
-                <a 
-                    className="collab-pl-cover-link" 
-                    href={`https://open.spotify.com/playlist/${playlistData.playlist_id}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                >
-                    <img 
-                        className="collab-pl-cover"
-                        src={playlistData.playlist_image}>
-                    </img>
-                </a>
+                {window.innerWidth >= 700 ? (
+                    <a 
+                        href={`https://open.spotify.com/playlist/${playlistData.playlist_id}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                    >
+                        <img 
+                            className="collab-pl-cover"
+                            src={playlistData.playlist_image}>
+                        </img>
+                    </a>
+                ) : (
+                    ""
+                )}
 
                 <div className="collab-pl-tracks">
                     <a 
