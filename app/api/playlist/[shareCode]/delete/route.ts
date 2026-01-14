@@ -1,0 +1,49 @@
+import { NextResponse } from 'next/server'
+import { getValidToken } from '@/lib/token'
+import { supabaseAdmin } from '@/lib/supabase-admin'
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ shareCode: string }> }
+) {
+  const { trackUri } = await request.json()
+
+  if (!trackUri) {
+    return NextResponse.json({ error: 'Track URI required' }, { status: 400 })
+  }
+
+  const { shareCode } = await params
+  const result = await getValidToken(shareCode)
+
+  if (!result) {
+    return NextResponse.json({ error: 'Invalid playlist' }, { status: 404 })
+  }
+
+  const { data: playlist } = await supabaseAdmin
+    .from('shared_playlists')
+    .select('spotify_access_token, spotify_refresh_token, id, playlist_id')
+    .eq('share_code', shareCode)
+    .single()
+
+  if (!playlist) {
+    return NextResponse.json({ error: 'Playlist not found' }, { status: 404 })
+  }
+  
+  const response = await fetch(
+    `https://api.spotify.com/v1/playlists/${playlist.playlist_id}/tracks`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${result.token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ tracks: [{ uri: trackUri }] })
+    }
+  )
+
+  if (response.ok) {
+    return NextResponse.json({ success: true })
+  }
+
+  return NextResponse.json({ error: 'Failed to delete track' }, { status: 500 })
+}

@@ -41,12 +41,7 @@ export default function SharedPlaylist() {
 
         setPlaylistData(data)
         await loadTracks(data.playlist_id, tracks.length)
-
-        console.log('Playlist data loaded:', data)
-        console.log('Loading tracks for playlist:', data.playlist_id)
     }
-
-    
 
     loadPlaylist()
   }, [shareCode])
@@ -72,12 +67,10 @@ export default function SharedPlaylist() {
     const loadedTracks = data.items.map((item: any) => item.track)
     setTracks(tracks.concat(loadedTracks))
     setNumTracks(data.total)
-    console.log('Fetched playlist tracks:', data)
-    console.log('Tracks state updated:', tracks)
     setLoadingTracks(false)
   }
 
-  async function searchSpotify() {
+  async function search() {
     if (!searchQuery.trim()) return
 
     setSearching(true)
@@ -89,19 +82,18 @@ export default function SharedPlaylist() {
     })
 
     const data = await response.json()
-    console.log('Search data:', data)
     setSearchResults(data.tracks?.items)
     setSearching(false)
-    console.log('Search results:', searchResults)
   }
 
-  async function addTrackToPlaylist(track: Track) {
+  async function addTrack(track: Track) {
     if (!track) {
         console.log('No track provided')
         return
     }
 
     setAddedTracks(addedTracks.concat([track]))
+    setTracks(tracks.concat([track]))
     setNumTracks(numTracks + 1)
 
     const trackUri = track?.uri
@@ -113,17 +105,36 @@ export default function SharedPlaylist() {
     })
 
     const data = await response.json()
-
     
-    if (data.success) {
-        console.log('Song added to playlist!')
-    } else {
-        console.log('Failed to add song')
+    if (!data.success) {
+        console.log('Failed to add track')
     }
   }
 
   async function deleteTrack(track: Track) {
-    return
+    if (!track) {
+        console.log('No track provided')
+        return
+    }
+
+    setAddedTracks(addedTracks.filter(t => t.id !== track.id))
+    setTracks(tracks.filter(t => t.id !== track.id))
+    setNumTracks(numTracks - 1)
+
+    const trackUri = track?.uri
+
+    const response = await fetch(`/api/playlist/${shareCode}/delete`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ trackUri })
+    })
+
+    const data = await response.json()
+
+    
+    if (!data.success) {
+        console.log('Failed to delete track')
+    }
   }
 
   function handleScroll(instance: any) {
@@ -133,7 +144,7 @@ export default function SharedPlaylist() {
 
     // Check if scrolled to bottom (with small threshold)
     if (scrollHeight - scrollTop - clientHeight < 50) {
-        loadTracks(playlistData.playlist_id, tracks.length)
+        loadTracks(playlistData.playlist_id, numTracks)
     }
   }
 
@@ -150,7 +161,7 @@ export default function SharedPlaylist() {
                     <h2 className="sub-header">You've been invited to collaborate on a playlist!</h2>
                 ) : (
                     <div className="added-tracks-section">
-                        <h2 className="added-tracks-header">Added</h2>
+                        <h2 className="added-tracks-header">Added Tracks</h2>
                         <div className="added-tracks-fade-container">
                             <OverlayScrollbarsComponent 
                                     options={{
@@ -166,15 +177,42 @@ export default function SharedPlaylist() {
                                 <div className="added-tracks-scroll">
                                     {addedTracks.map((track: Track, index: number) => (
                                         <div key={track.id} className="added-track-card">
-                                            <img 
-                                                className="added-track-cover"
-                                                src={track.album.images[2]?.url || track.album.images[0]?.url} 
-                                                alt={track.name}
-                                            />
-                                            <h3 className="added-track-name underline-on-hover">{track.name}</h3>
-                                            <p className="added-track-artists underline-on-hover">
-                                                &nbsp;• {track.artists.map((artist: any) => artist.name).join(', ')}
-                                            </p>
+                                            <a
+                                                href={`https://open.spotify.com/track/${track.id}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                <img 
+                                                    className="added-track-cover"
+                                                    src={track.album.images[2]?.url || track.album.images[0]?.url} 
+                                                    alt={track.name}
+                                                />
+                                            </a>
+                                            
+                                            <a 
+                                                className="added-track-name underline-on-hover"
+                                                href={`https://open.spotify.com/track/${track.id}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                {track.name}
+                                            </a>
+                                            <span className="added-track-artists">
+                                                &nbsp;•{" "}
+                                                {track.artists.map((artist: any, index: number) => (
+                                                    <span key={artist.id ?? artist.name}>
+                                                    <a
+                                                        className="underline-on-hover"
+                                                        href={`https://open.spotify.com/artist/${artist.id}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        {artist.name}
+                                                    </a>
+                                                    {index < track.artists.length - 1 && ", "}
+                                                    </span>
+                                                ))}
+                                            </span>
                                             <button 
                                                 className="collab-pl-track-button-delete"
                                                 onClick={() => deleteTrack(track)}
@@ -222,15 +260,42 @@ export default function SharedPlaylist() {
                                 {tracks.map((track: Track, index: number) => (
                                     <div key={track.id} className="collab-pl-track-card">
                                         <p className="collab-pl-track-number">{index + 1}</p>
-                                        <img 
-                                            className="collab-pl-track-cover"
-                                            src={track.album.images[2]?.url || track.album.images[0]?.url} 
-                                            alt={track.name}
-                                        />
-                                        <h3 className="collab-pl-track-name underline-on-hover">{track.name}</h3>
-                                        <p className="collab-pl-track-artists underline-on-hover">
-                                            &nbsp;• {track.artists.map((artist: any) => artist.name).join(', ')}
-                                        </p>
+                                        <a
+                                            href={`https://open.spotify.com/track/${track.id}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <img 
+                                                className="collab-pl-track-cover"
+                                                src={track.album.images[2]?.url || track.album.images[0]?.url} 
+                                                alt={track.name}
+                                            />
+                                        </a>
+                                        
+                                        <a 
+                                            className="collab-pl-track-name underline-on-hover"
+                                            href={`https://open.spotify.com/track/${track.id}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            {track.name}
+                                        </a>
+                                        <span className="added-track-artists">
+                                            &nbsp;•{" "}
+                                            {track.artists.map((artist: any, index: number) => (
+                                                <span key={artist.id ?? artist.name}>
+                                                <a
+                                                    className="underline-on-hover"
+                                                    href={`https://open.spotify.com/artist/${artist.id}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    {artist.name}
+                                                </a>
+                                                {index < track.artists.length - 1 && ", "}
+                                                </span>
+                                            ))}
+                                        </span>
                                         <button 
                                             className="collab-pl-track-button-delete"
                                             onClick={() => deleteTrack(track)}
@@ -255,12 +320,12 @@ export default function SharedPlaylist() {
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && searchSpotify()}
+                        onKeyDown={(e) => e.key === 'Enter' && search()}
                         placeholder="Search for tracks..."
                     />
                     <button 
                         className="search-button"
-                        onClick={searchSpotify}
+                        onClick={search}
                         disabled={searching}
                     >
                         {searching ? 'Searching...' : 'Search'}
@@ -296,7 +361,7 @@ export default function SharedPlaylist() {
                                         </div>
                                         <button 
                                             className="track-button-add"
-                                            onClick={() => addTrackToPlaylist(track)}
+                                            onClick={() => addTrack(track)}
                                         >
                                             <img src="/plus.png" alt="Add" className="track-button-add-icon"></img>
                                         </button>
