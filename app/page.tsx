@@ -185,7 +185,9 @@ export default function Home() {
           </div>
         </div>
         <div className="playlists-section">
-          <h2 className="sub-header">Select a playlist to share:</h2>
+          <div className="sub-header-container">
+            <p>Select a playlist to share:</p>
+          </div>
           <div className="playlists-fade-container">
             <OverlayScrollbarsComponent 
               options={{

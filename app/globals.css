@@ -215,22 +215,13 @@ body {
     opacity: 1;
   }
 
-  .sub-header {
-    display: flex;
-    text-align: center;
-    font-size: min(3vw, 3vh);
-    font-weight: bold;
-    padding-top: 3em;
-    padding-bottom: 1em;
-    height: 20vh;
-    align-items: center;
-  }
-
   .sub-header-container {
-    height: 20vh;
     display: flex;
+    height: 15vh;
     align-items: center;
     justify-content: center;
+    font-size: min(3vw, 3vh);
+    font-weight: bold;
   }
 
   .playlists-section {
@@ -412,10 +403,9 @@ body {
 
   .collab-section {
     max-width: 80vw;
-    margin: 0 auto;
+    margin-inline: auto;
     font-size: 2vh;
   }
-  
 
   .added-tracks-section {
     display: flex;
@@ -425,6 +415,7 @@ body {
     padding: 1em;
     gap: 1em;
     width: 100%;
+    margin: 2em 0;
   }
 
   .added-tracks-header {
